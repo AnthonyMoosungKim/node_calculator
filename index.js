@@ -14,81 +14,56 @@ Handle remainders properly (modulo). Example : 9 divided by 4 would print 2.25
 Make the program more elegant by allowing the user to enter an entire operation on one line such as: "6 / 6" or "5 * 3" (Hint use arguments to solve this)
 */
 
-let start = null;
-let operator = null;
-let firstNumber = null;
-let secondNumber = null;
-let answer = null;
 
-function nodeCalculator () {
-  start = rs.keyInYN("Would you like to calculate step by step?");
-  
-  if (start) {
-    console.log("Okay.");
-    stepByStep();
-  } else {
-    oneLine();
+// const arrOperators = ["+", "-", "*", "/"];
+
+const objOperators = {
+  "+": (a, b) => a + b,
+  "-": (a, b) => a - b,
+  "*": (a, b) => a * b,
+  "/": (a, b) => a / b
+};
+
+const arrOperators = Object.keys(objOperators);
+
+const operatorListMessage = (operatorList) => {
+  let str = '';
+  for (let i = 0; i < operatorList.length; i++) {
+    if (i != operatorList.length - 1) {
+      str += `'${operatorList[i]}', `;
+    } else {
+      str += `or '${operatorList[i]}'`;
+    }
   }
-}
+  return str;
+};
 
-function stepByStep() {
-  operator = rs.question("What operation would you like to perform? ");
-  if (
-    operator === '+'
-    || operator === '-'
-    || operator === '*'
-    || operator === '/'
-  ) {
-    firstNumberInput();
+function getOperator(operatorList) {
+  const operator = rs.question("What operation would you like to perform? ");
+  if (operatorList.includes(operator)) {
+    return operator;
   } else {
     console.log("That is not a valid operator.");
-    console.log("Please enter either a '+', '-', '*', or '/'.");
-    nodeCalculator();
+    console.log(`Please enter either a ${operatorListMessage(operatorList)}`);
+    return getOperator(operatorList);
   }
-}
+};
 
-function firstNumberInput() {
-  firstNumber = rs.questionInt('Please enter the first number. ');
-  secondNumberInput();
-}
+function getNumber(order) {
+  return rs.questionInt(`Please enter the ${order} number. `);
+};
 
-function secondNumberInput() {
-  secondNumber = rs.questionInt('Please enter the second number. ');
-  if (operator === '+') {
-    return answer = firstNumber + secondNumber;
-  } else if (operator === '-') {
-    return answer = firstNumber - secondNumber;
-  } else if (operator === '*') {
-    return answer = firstNumber * secondNumber;
-  } else if (operator === '/') {
-    return answer = firstNumber / secondNumber;
-  }
-}
+function calculate(objOperations, operator, firstNumber, secondNumber) {
+  return objOperations[operator](firstNumber, secondNumber);
+};
 
-function oneLine() {
-  single = rs.question("Type in your math problem. ");
-  const arrayOfInput = single.split(' ').map(numberOrOp => numberOrOp.trim()).filter(numberOrOp => numberOrOp !== '');
+const calculator = objOp => {
+  const operatorList = Object.keys(objOp);
+  const operator = getOperator(operatorList);
+  const firstNumber = getNumber("first");
+  const secondNumber = getNumber("second");
+  const result = calculate(objOp, operator, firstNumber, secondNumber);
+  console.log( "The result is: ", result);
+};
 
-  if (arrayOfInput[0] == Number(arrayOfInput[0]) && arrayOfInput[2] == Number(arrayOfInput[2])) {
-    if (arrayOfInput[1] === '+') {
-      return answer = Number(arrayOfInput[0]) + Number(arrayOfInput[2]);
-    } else if (arrayOfInput[1] === '-') {
-      return answer = Number(arrayOfInput[0]) - Number(arrayOfInput[2]);
-    } else if (arrayOfInput[1] === '*') {
-      return answer = Number(arrayOfInput[0]) * Number(arrayOfInput[2]);
-    } else if (arrayOfInput[1] === '/') {
-      return answer = Number(arrayOfInput[0]) / Number(arrayOfInput[2]);
-    } else {
-      console.log("Sorry, but this is not an optimal basic math equation.");
-      nodeCalculator();
-    }
-  } else {
-    console.log("Sorry, but this is not an optimal basic math equation.");
-    nodeCalculator();
-  }
-}
-
-
-
-nodeCalculator();
-console.log(answer);
+calculator(objOperators);
